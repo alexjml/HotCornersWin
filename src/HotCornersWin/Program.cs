@@ -185,10 +185,43 @@ namespace HotCornersWin
                 if (_wasIconClicked)
                 {
                     _wasIconClicked = false;
-                    // single click action
+                    // single click action - re-detect screens first
+                    try
+                    {
+                        RedetectAndRecordScreens();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        _ = MessageBox.Show(Properties.Resources.strBoundsErr,
+                            Properties.Resources.strFatalErr,
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Environment.Exit(1);
+                        return;
+                    }
                     ToggleOperationOnOff();
                 }
             });
+        }
+
+        /// <summary>
+        /// Re-detect current screens and record them to the CornersHitTester.
+        /// Throws InvalidOperationException if no screens are detected.
+        /// </summary>
+        private static Rectangle[] RedetectAndRecordScreens()
+        {
+            var screens = GetScreens();
+            if (screens.Length == 0)
+            {
+                Debug.WriteLine("RedetectAndRecordScreens: no screens detected");
+                throw new InvalidOperationException("No screens detected");
+            }
+            CornersHitTester.Screens = screens;
+            Debug.WriteLine($"RedetectAndRecordScreens: detected {screens.Length} screens");
+            foreach (var s in screens)
+            {
+                Debug.WriteLine($"Screen: {s.X},{s.Y} {s.Width}x{s.Height}");
+            }
+            return screens;
         }
 
         private static void ToggleOperationOnOff()
