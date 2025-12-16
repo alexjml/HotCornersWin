@@ -185,19 +185,7 @@ namespace HotCornersWin
                 if (_wasIconClicked)
                 {
                     _wasIconClicked = false;
-                    // single click action - re-detect screens first
-                    try
-                    {
-                        RedetectAndRecordScreens();
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        _ = MessageBox.Show(Properties.Resources.strBoundsErr,
-                            Properties.Resources.strFatalErr,
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Environment.Exit(1);
-                        return;
-                    }
+                    // single click action
                     ToggleOperationOnOff();
                 }
             });
@@ -226,6 +214,20 @@ namespace HotCornersWin
 
         private static void ToggleOperationOnOff()
         {
+            // re-detect screens first
+            try
+            {
+                RedetectAndRecordScreens();
+            }
+            catch (InvalidOperationException)
+            {
+                _ = MessageBox.Show(Properties.Resources.strBoundsErr,
+                    Properties.Resources.strFatalErr,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(1);
+                return;
+            }
+
             // toggle enable on double click and save changes
             _cornersProcessor.Enabled = !_cornersProcessor.Enabled;
             _appSettingsHelper.Settings.IsEnabled = _cornersProcessor.Enabled;
